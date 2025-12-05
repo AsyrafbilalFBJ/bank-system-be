@@ -1,0 +1,722 @@
+FORMAT: 1A
+HOST: https://bank-system.apiary.io
+
+# Bank Saving System API
+The Bank Saving System API allows client applications to manage customers, deposito types, accounts, and transactions stored in a MySQL database. All responses follow a consistent JSON envelope using the `success` flag and either `data` or `message`.
+
+## Authentication
+This example API does not implement authentication. All endpoints are open for demonstration purposes.
+
+# Group Customers
+
+## Customers Collection [/customers]
+
+### List Customers [GET]
+Retrieve the full list of customers.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": [
+                { "id": 1, "name": "John Doe" },
+                { "id": 2, "name": "Jane Smith" }
+            ]
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Create Customer [POST]
+Create a new customer.
+
++ Request (application/json)
+    + Headers
+
+            Content-Type: application/json
+
+    + Body
+
+            {
+                "name": "John Doe"
+            }
+
++ Response 201 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 3,
+                "name": "John Doe"
+            }
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Customer name is required"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+## Customer Resource [/customers/{id}]
++ Parameters
+    + id: 1 (number, required) - Customer identifier.
+
+### Get Customer by ID [GET]
+Retrieve a single customer.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1,
+                "name": "John Doe"
+            }
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Customer not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Update Customer [PUT]
+Update an existing customer's name.
+
++ Request (application/json)
+    + Headers
+
+            Content-Type: application/json
+
+    + Body
+
+            {
+                "name": "Updated Name"
+            }
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1,
+                "name": "Updated Name"
+            }
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Customer name is required"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Customer not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Delete Customer [DELETE]
+Remove a customer. Deletion is prevented when accounts exist for the customer.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1
+            },
+            "message": "Customer deleted"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Cannot delete customer with existing accounts"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Customer not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+# Group Accounts
+
+## Accounts Collection [/accounts]
+
+### List Accounts [GET]
+Retrieve the list of accounts along with customer and deposito type information.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": [
+                {
+                    "id": 1,
+                    "customer_id": 1,
+                    "customer_name": "John Doe",
+                    "deposito_type_id": 2,
+                    "deposito_type_name": "Deposito Gold",
+                    "yearly_return": 7.0,
+                    "balance": 500000.00
+                }
+            ]
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Create Account [POST]
+Create a new account. Customer and deposito type must exist.
+
++ Request (application/json)
+    + Headers
+
+            Content-Type: application/json
+
+    + Body
+
+            {
+                "customer_id": 1,
+                "deposito_type_id": 2,
+                "balance": 0
+            }
+
++ Response 201 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 5,
+                "customer_id": 1,
+                "customer_name": "John Doe",
+                "deposito_type_id": 2,
+                "deposito_type_name": "Deposito Gold",
+                "yearly_return": 7.0,
+                "balance": 0.00
+            }
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Balance must be a non-negative number"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Deposito type not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+## Account Resource [/accounts/{id}]
++ Parameters
+    + id: 1 (number, required) - Account identifier.
+
+### Get Account by ID [GET]
+Retrieve details for a single account.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1,
+                "customer_id": 1,
+                "customer_name": "John Doe",
+                "deposito_type_id": 2,
+                "deposito_type_name": "Deposito Gold",
+                "yearly_return": 7.0,
+                "balance": 500000.00
+            }
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Account not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Update Account [PUT]
+Update an account's deposito type.
+
++ Request (application/json)
+    + Headers
+
+            Content-Type: application/json
+
+    + Body
+
+            {
+                "deposito_type_id": 3
+            }
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1,
+                "customer_id": 1,
+                "customer_name": "John Doe",
+                "deposito_type_id": 3,
+                "deposito_type_name": "Deposito Platinum",
+                "yearly_return": 8.0,
+                "balance": 500000.00
+            }
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Invalid deposito_type_id"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Account not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Delete Account [DELETE]
+Delete an account. Accounts with transactions cannot be deleted.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1
+            },
+            "message": "Account deleted"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Cannot delete account with existing transactions"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Account not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+# Group Deposito Types
+
+## Deposito Types Collection [/deposito-types]
+
+### List Deposito Types [GET]
+Retrieve all deposito types.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": [
+                { "id": 1, "name": "Deposito Silver", "yearly_return": 3.5 },
+                { "id": 2, "name": "Deposito Gold", "yearly_return": 7.0 }
+            ]
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Create Deposito Type [POST]
+Create a new deposito type.
+
++ Request (application/json)
+    + Headers
+
+            Content-Type: application/json
+
+    + Body
+
+            {
+                "name": "Deposito Gold",
+                "yearly_return": 7.0
+            }
+
++ Response 201 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 4,
+                "name": "Deposito Gold",
+                "yearly_return": 7.0
+            }
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "yearly_return must be a number"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+## Deposito Type Resource [/deposito-types/{id}]
++ Parameters
+    + id: 1 (number, required) - Deposito type identifier.
+
+### Get Deposito Type by ID [GET]
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1,
+                "name": "Deposito Silver",
+                "yearly_return": 3.5
+            }
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Deposito type not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Update Deposito Type [PUT]
+
++ Request (application/json)
+    + Headers
+
+            Content-Type: application/json
+
+    + Body
+
+            {
+                "name": "Deposito Platinum",
+                "yearly_return": 8.0
+            }
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1,
+                "name": "Deposito Platinum",
+                "yearly_return": 8.0
+            }
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Deposito type name is required"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Deposito type not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+### Delete Deposito Type [DELETE]
+Prevent deletion when the deposito type is referenced by accounts.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "id": 1
+            },
+            "message": "Deposito type deleted"
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Cannot delete deposito type that is used by existing accounts"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Deposito type not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+# Group Transactions & Balance
+
+## Deposit Resource [/accounts/{id}/deposit]
++ Parameters
+    + id: 1 (number, required) - Account identifier.
+
+### Deposit to Account [POST]
+Add funds to an account and create a deposit transaction.
+
++ Request (application/json)
+    + Headers
+
+            Content-Type: application/json
+
+    + Body
+
+            {
+                "amount": 100000.00,
+                "date": "2025-12-01"
+            }
+
++ Response 201 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "account": {
+                    "id": 1,
+                    "customer_id": 1,
+                    "deposito_type_id": 2,
+                    "balance": 600000.00,
+                    "customer_name": "John Doe",
+                    "deposito_type_name": "Deposito Gold",
+                    "yearly_return": 7.0
+                },
+                "transaction": {
+                    "id": 15,
+                    "account_id": 1,
+                    "type": "deposit",
+                    "amount": 100000.00,
+                    "date": "2025-12-01"
+                }
+            }
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Amount must be greater than zero"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Account not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+## Withdraw Resource [/accounts/{id}/withdraw]
++ Parameters
+    + id: 1 (number, required) - Account identifier.
+
+### Withdraw from Account [POST]
+Withdraw funds and create a withdraw transaction.
+
++ Request (application/json)
+    + Headers
+
+            Content-Type: application/json
+
+    + Body
+
+            {
+                "amount": 50000.00,
+                "date": "2025-12-02"
+            }
+
++ Response 201 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "account": {
+                    "id": 1,
+                    "customer_id": 1,
+                    "deposito_type_id": 2,
+                    "balance": 450000.00,
+                    "customer_name": "John Doe",
+                    "deposito_type_name": "Deposito Gold",
+                    "yearly_return": 7.0
+                },
+                "transaction": {
+                    "id": 16,
+                    "account_id": 1,
+                    "type": "withdraw",
+                    "amount": 50000.00,
+                    "date": "2025-12-02"
+                }
+            }
+        }
+
++ Response 400 (application/json)
+
+        {
+            "success": false,
+            "message": "Insufficient balance"
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Account not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
+
+## Ending Balance Resource [/accounts/{id}/calculate-ending-balance]
++ Parameters
+    + id: 1 (number, required) - Account identifier.
+
+### Calculate Ending Balance [GET]
+Return the projected ending balance using current balance, monthly return (yearly_return / 12 / 100), and a hardcoded 12-month period.
+
++ Response 200 (application/json)
+
+        {
+            "success": true,
+            "data": {
+                "account_id": 1,
+                "starting_balance": 1000000.00,
+                "months": 12,
+                "monthly_return": 0.005,
+                "ending_balance": 1060000.00
+            }
+        }
+
++ Response 404 (application/json)
+
+        {
+            "success": false,
+            "message": "Account not found"
+        }
+
++ Response 500 (application/json)
+
+        {
+            "success": false,
+            "message": "Internal server error"
+        }
